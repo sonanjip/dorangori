@@ -45,6 +45,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.wearable.Wearable
+import io.github.taehunkim.dorangori.transcribe.AsrLanguage
 import io.github.taehunkim.dorangori.BuildConfig
 import io.github.taehunkim.dorangori.R
 import io.github.taehunkim.dorangori.data.prefs.AsrMode
@@ -70,6 +71,8 @@ fun SettingsScreen(onBack: () -> Unit) {
     val chargingOnly by settings.scheduleChargingOnly.collectAsStateWithLifecycle(true)
     val preset by settings.idlePreset.collectAsStateWithLifecycle(IdlePreset.DEFAULT)
     val retention by settings.retentionDays.collectAsStateWithLifecycle(0)
+    val language by settings.asrLanguage.collectAsStateWithLifecycle(AsrLanguage.AUTO)
+    var pickLanguage by remember { mutableStateOf(false) }
     var pickTime by remember { mutableStateOf(false) }
 
     // Re-read the live status (notifications, watch, OndolSaem) whenever the user comes back from another app's screen.
@@ -88,6 +91,10 @@ fun SettingsScreen(onBack: () -> Unit) {
         )
     }) { padding ->
         Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Section(R.string.asr_language_title)
+            Text(stringResource(R.string.asr_language_description), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            OutlinedButton(onClick = { pickLanguage = true }) { Text(languageLabel(language)) }
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
             Section(R.string.settings_asr_section)
             ModeRow(AsrMode.IMMEDIATE, mode, R.string.mode_immediate, R.string.mode_immediate_desc) { scope.launch { settings.setAsrMode(it) } }
             ModeRow(AsrMode.SCHEDULED, mode, R.string.mode_scheduled, R.string.mode_scheduled_desc) { scope.launch { settings.setAsrMode(it) } }
@@ -155,6 +162,27 @@ fun SettingsScreen(onBack: () -> Unit) {
         }
     }
 
+    if (pickLanguage) AlertDialog(
+        onDismissRequest = { pickLanguage = false },
+        title = { Text(stringResource(R.string.asr_language_title)) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                AsrLanguage.entries.forEach { option ->
+                    Row(Modifier.fillMaxWidth().clickable {
+                        scope.launch { settings.setAsrLanguage(option) }; pickLanguage = false
+                    }, verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(selected = language == option, onClick = {
+                            scope.launch { settings.setAsrLanguage(option) }; pickLanguage = false
+                        })
+                        Text(languageLabel(option))
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = { TextButton(onClick = { pickLanguage = false }) { Text(stringResource(R.string.cancel)) } },
+    )
+
     if (pickTime) {
         val state = rememberTimePickerState(minutes / 60, minutes % 60, is24Hour = true)
         AlertDialog(
@@ -192,3 +220,14 @@ private fun StatusRow(label: String, value: String, actionLabel: String?, onActi
         if (actionLabel != null) OutlinedButton(onClick = onAction) { Text(actionLabel) }
     }
 }
+
+@Composable
+private fun languageLabel(language: AsrLanguage): String = stringResource(when (language) {
+    AsrLanguage.AUTO -> R.string.asr_language_auto
+    AsrLanguage.SYSTEM -> R.string.asr_language_system
+    AsrLanguage.KOREAN -> R.string.asr_language_ko
+    AsrLanguage.ENGLISH -> R.string.asr_language_en
+    AsrLanguage.JAPANESE -> R.string.asr_language_ja
+    AsrLanguage.CHINESE -> R.string.asr_language_zh
+    AsrLanguage.CANTONESE -> R.string.asr_language_yue
+})

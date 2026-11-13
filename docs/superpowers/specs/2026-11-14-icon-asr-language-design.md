@@ -1,0 +1,9 @@
+# Dorangori identity and speech-language selection
+
+Approved by the user: replace the microphone launcher with two interwoven teal/apricot rings on phone and watch; keep the existing vector/adaptive-icon system and provide a genuine monochrome silhouette. This represents the phone/watch link and remains useful beyond voice recording. Alternatives discussed were linked speech bubbles (too chat-specific) and an ember inside a ring (less direct connection symbolism).
+
+Phone ASR settings are independent of UI language: Automatic (default), Device language, Korean, English, Japanese, Chinese, Cantonese. Device language means the phone system locale, not an app-local locale override; unsupported locales resolve to auto. Cantonese (`yue` or `zh-HK`/`zh-MO`) maps to yue; other Chinese locales to zh. A changed setting affects future transcriptions and explicit retranscription; existing text stays intact.
+
+OndolSaem adds a request-scoped ASR language method (API V5, append-only AIDL) without changing legacy auto calls. Validate values at both SDK and service boundaries. Keep one SenseVoice recognizer loaded; replace it on language changes under the ASR request gate instead of loading a recognizer per language. Existing clients continue to get auto even after an explicit-language request. Older hosts remain usable for auto; explicit language produces an update-required message instead of silently ignoring it. No model download or Room schema change is needed.
+
+Verify system-vs-app locale, unsupported-language fallback, all five model languages, explicit/auto request isolation, invalid inputs and cancellation. Build sequentially with the workspace memory limits and emulators stopped. Use one emulator for fake-model binder tests and real ASR comparison after stopping build processes and unloading MLX; restore the service afterward. No push or publication.

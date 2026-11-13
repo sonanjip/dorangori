@@ -23,3 +23,5 @@ For a manual bridge (the same mechanism used by Android Studio), forward phone T
 To simulate losing the link, remove both bridge mappings and refresh the watch connection. Confirm its peer is disconnected, record and stop, and verify that only the watch has the new file. Restore the mappings and refresh; do not reopen Dorangori. Verify automatic phone receipt, one database row, ASR completion and removal of the watch file. This tests Data Layer queuing, not physical Bluetooth radio behaviour.
 
 Build with emulators stopped and one Gradle worker as specified in the workspace AGENTS.md. Run the two emulators together only for pair tests after stopping the local model service, monitor memory, and shut both down before restoring that service.
+
+Language-selection builds use OndolSaem SDK 0.7.0/API V5 (local composite checkout until its SDK tag is published). Install OndolSaem 0.9.0+ together with Dorangori 0.2.0 to use explicit languages. Pure language-resolution tests cover fixed/auto/system language, regions, Cantonese and unsupported-language fallback.

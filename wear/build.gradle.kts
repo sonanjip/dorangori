@@ -4,7 +4,7 @@ plugins {
 }
 
 // Same version as the phone app, so the two always ship together.
-val appVersionName = "0.1.0"
+val appVersionName = "0.2.0"
 val appVersionCode = appVersionName.split(".").let { (a, b, c) -> a.toInt() * 10000 + b.toInt() * 100 + c.toInt() }
 
 android {

@@ -22,6 +22,8 @@ class ModelHost(context: Context) {
         data class Ready(val modelId: String, val version: Int) : Status
     }
 
+    class LanguageRequiresUpdate : Exception()
+
     class NotReady(val status: Status) : Exception("speech recognition not ready: $status")
 
     class Result(val modelId: String, val version: Int, val cues: List<Cue>)
@@ -44,11 +46,14 @@ class ModelHost(context: Context) {
     }
 
     /** [pcm]: raw 16 kHz mono 16-bit PCM. Keeps the speech model loaded for the length of the call. */
-    suspend fun transcribe(pcm: File, priority: Int): Result {
+    suspend fun transcribe(pcm: File, priority: Int, language: String = "auto"): Result {
         val ready = status().let { it as? Status.Ready ?: throw NotReady(it) }
+        if (language != "auto" && !client.supports(OndolSaem.Api.V5)) throw LanguageRequiresUpdate()
         val cues = ArrayList<Cue>()
         client.acquire(OndolSaem.Categories.ASR).use {
-            client.transcribe(pcm, 0L, priority) { s, e, t -> cues += Cue(s, e, t) }
+            val onCue: suspend (Long, Long, String) -> Unit = { s, e, t -> cues += Cue(s, e, t) }
+            if (language == "auto") client.transcribe(pcm, 0L, priority, onCue)
+            else client.transcribeWithLanguage(pcm, 0L, language, priority, onCue)
         }
         return Result(ready.modelId, ready.version, cues)
     }

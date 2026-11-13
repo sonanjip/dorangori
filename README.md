@@ -4,7 +4,7 @@
 
 Record a voice note on your Wear OS watch; your phone transcribes it with [OndolSaem](https://github.com/sonanjip/ondolsaem) on-device speech recognition and hands you the text: copy it, ask Malbotdari, or save it to Jogakbo together with the audio.
 
-Status: 0.1.0. The watch recorder, the transfer code and the whole phone side work on emulators; the watch-to-phone transfer and the hardware button still need a real watch ([docs/roadmap.md](docs/roadmap.md)).
+Status: 0.2.0. The watch recorder, the transfer code and the whole phone side work on emulators; the watch-to-phone transfer and the hardware button still need a real watch ([docs/roadmap.md](docs/roadmap.md)).
 
 | Feature | Status |
 |---|---|
@@ -13,5 +13,8 @@ Status: 0.1.0. The watch recorder, the transfer code and the whole phone side wo
 | On-device transcription (right away, at a set time, when idle, or on request) | done |
 | Notification actions: copy, ask Malbotdari, save to Jogakbo (audio + text as one note) | done |
 | Recording list, detail, multi-select delete, auto-delete | done |
+| Recognition language: automatic, device language, Korean, English, Japanese, Mandarin, Cantonese | done (explicit languages require OndolSaem 0.9.0+) |
 
 Build: see [docs/development.md](docs/development.md). License: Apache-2.0.
+
+The teal/apricot interwoven rings represent the phone/watch connection beyond recording. UI language (English/Korean) and recognition language are independent.

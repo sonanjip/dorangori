@@ -29,7 +29,7 @@ class AppContainer(context: android.content.Context) {
     val settings = SettingsStore(app)
     val models = ModelHost(app)
     val repo by lazy { RecordingRepository(app, dao) }
-    val transcriber by lazy { Transcriber(app, dao, models) }
+    val transcriber by lazy { Transcriber(app, dao, models, settings) }
     val scheduler by lazy { TranscribeScheduler(app, settings, dao) }
     val jogakboSaver by lazy { JogakboSaver(app) }
 }

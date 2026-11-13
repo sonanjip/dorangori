@@ -29,6 +29,7 @@ private val Context.dataStore by preferencesDataStore("dorangori_settings")
 class SettingsStore(context: Context) {
     private val store = context.applicationContext.dataStore
 
+    val asrLanguage = store.data.map { io.github.taehunkim.dorangori.transcribe.AsrLanguage.of(it[ASR_LANGUAGE]) }
     val asrMode: Flow<AsrMode> = store.data.map { p -> AsrMode.entries.firstOrNull { it.name == p[ASR_MODE] } ?: AsrMode.IMMEDIATE }
     val scheduleMinutes: Flow<Int> = store.data.map { it[SCHEDULE_MINUTES] ?: DEFAULT_SCHEDULE_MINUTES }
     val scheduleChargingOnly: Flow<Boolean> = store.data.map { it[SCHEDULE_CHARGING_ONLY] ?: true }
@@ -37,6 +38,8 @@ class SettingsStore(context: Context) {
     val retentionDays: Flow<Int> = store.data.map { it[RETENTION_DAYS] ?: 0 }
 
     suspend fun asrModeNow(): AsrMode = asrMode.first()
+
+    suspend fun setAsrLanguage(language: io.github.taehunkim.dorangori.transcribe.AsrLanguage) = edit { it[ASR_LANGUAGE] = language.name }
 
     suspend fun setAsrMode(mode: AsrMode) = edit { it[ASR_MODE] = mode.name }
     suspend fun setScheduleMinutes(minutes: Int) = edit { it[SCHEDULE_MINUTES] = minutes }
@@ -49,6 +52,7 @@ class SettingsStore(context: Context) {
     companion object {
         const val DEFAULT_SCHEDULE_MINUTES = 3 * 60
         val RETENTION_CHOICES = listOf(0, 7, 30, 90)
+        private val ASR_LANGUAGE = stringPreferencesKey("asr_language")
         private val ASR_MODE = stringPreferencesKey("asr_mode")
         private val SCHEDULE_MINUTES = intPreferencesKey("schedule_minutes")
         private val SCHEDULE_CHARGING_ONLY = booleanPreferencesKey("schedule_charging_only")

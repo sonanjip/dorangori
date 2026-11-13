@@ -14,3 +14,7 @@ Two modules, one applicationId (`io.github.taehunkim.dorangori`) so the Wearable
 - Transcription: m4a is decoded to 16 kHz mono 16-bit PCM and passed to `OndolSaemClient.transcribe`. Modes: immediate (default), scheduled, idle, manual.
 - Notification actions: copy (receiver writes the clipboard), ask Malbotdari (`ACTION_SEND text/plain` to its package), save to Jogakbo (Jogakbo SDK `createNote`, audio + transcript as one note).
 - Settings: transcription timing, auto-delete period, notification and battery hints, watch and OndolSaem status.
+
+## Request-scoped ASR language
+
+`SettingsStore.asrLanguage` stores `AsrLanguage` separately from UI localization. `Transcriber` resolves SYSTEM using `LocaleManager.systemLocales` on API 33+ (system Resources earlier), snapshots the language at transcription time, and forwards a model code. `ModelHost` uses the legacy SDK call for auto; explicit languages use SDK API V5 `transcribeWithLanguage` after a capability check. An older host yields an actionable update-required error. Existing recordings are not reprocessed automatically. There is no Room schema change.
