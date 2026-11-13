@@ -21,30 +21,40 @@ object Intake {
     private const val TAG = "Intake"
 
     /** Returns the new recording's id, or null when nothing new came in (repeat, bad name, or a failed copy that will be retried). */
+    // Startup pull and the listener can deliver the same item concurrently in this process.
+    // Serialize the existence check, atomic file copy, database insert and acknowledgement.
+    @Synchronized
     fun ingest(context: Context, item: DataItem): Long? {
         val app = context.applicationContext
         val name = DataPaths.nameOf(item.uri.path.orEmpty()) ?: return null
         val container = (app as DorangoriApp).container
         val dataClient = Wearable.getDataClient(app)
         val map = DataMapItem.fromDataItem(item).dataMap
-        val known = runBlocking { container.dao.getByName(name) } != null
+        val known = runBlocking { container.dao.getByName(name) }
+        val target = File(Storage.dir(app), name)
         var newId: Long? = null
-        if (!known) {
+        if (known == null || target.length() == 0L) {
             val asset = map.getAsset(DataPaths.KEY_AUDIO) ?: return null
             val recordedAt = map.getLong(DataPaths.KEY_RECORDED_AT, System.currentTimeMillis())
-            val dir = Storage.dir(app)
-            val tmp = File(dir, "$name.incoming")
             try {
                 val response = Tasks.await(dataClient.getFdForAsset(asset))
-                response.inputStream.use { input -> tmp.outputStream().use { out -> input.copyTo(out) } }
-                if (!tmp.renameTo(File(dir, name))) throw java.io.IOException("cannot move $name into place")
+                val input = response.inputStream
+                if (io.github.taehunkim.dorangori.BuildConfig.DEBUG && input is java.io.FileInputStream) {
+                    runCatching { Log.d(TAG, "Asset descriptor: size=${input.channel.size()}, offset=${input.channel.position()}") }
+                }
+                IncomingAudio.copy(input, target)
             } catch (e: Exception) {
                 // Not acknowledged: the item stays queued and the next pull() takes it again.
                 Log.w(TAG, "cannot receive $name", e)
-                tmp.delete()
                 return null
             }
-            newId = runBlocking { container.repo.register(name, recordedAt) }
+            newId = runBlocking {
+                if (known == null) container.repo.register(name, recordedAt)
+                else {
+                    container.dao.setState(known.id, io.github.taehunkim.dorangori.data.db.RecState.RECEIVED, null)
+                    known.id
+                }
+            }
         }
         try { Tasks.await(dataClient.deleteDataItems(item.uri)) } catch (e: Exception) { Log.w(TAG, "cannot acknowledge $name", e) }
         return newId

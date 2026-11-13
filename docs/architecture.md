@@ -18,3 +18,7 @@ Two modules, one applicationId (`io.github.taehunkim.dorangori`) so the Wearable
 ## Request-scoped ASR language
 
 `SettingsStore.asrLanguage` stores `AsrLanguage` separately from UI localization. `Transcriber` resolves SYSTEM using `LocaleManager.systemLocales` on API 33+ (system Resources earlier), snapshots the language at transcription time, and forwards a model code. `ModelHost` uses the legacy SDK call for auto; explicit languages use SDK API V5 `transcribeWithLanguage` after a capability check. An older host yields an actionable update-required error. Existing recordings are not reprocessed automatically. There is no Room schema change.
+
+Intake serializes startup pulls with listener events. Audio is copied to a unique temporary file and must be nonempty before atomically replacing the target, inserting a row and acknowledging. A failed/empty copy leaves the DataItem and watch source intact; a repeat delivery cannot truncate a good recording.
+
+For file-backed asset streams, intake rewinds the descriptor before copying the whole asset. Nonseekable streams retain ordinary streaming behavior. This covers redelivery of byte-identical assets whose cached descriptor offset may already be at EOF.

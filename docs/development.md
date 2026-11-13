@@ -25,3 +25,9 @@ To simulate losing the link, remove both bridge mappings and refresh the watch c
 Build with emulators stopped and one Gradle worker as specified in the workspace AGENTS.md. Run the two emulators together only for pair tests after stopping the local model service, monitor memory, and shut both down before restoring that service.
 
 Language-selection builds use OndolSaem SDK 0.7.0/API V5 (local composite checkout until its SDK tag is published). Install OndolSaem 0.9.0+ together with Dorangori 0.2.0 to use explicit languages. Pure language-resolution tests cover fixed/auto/system language, regions, Cantonese and unsupported-language fallback.
+
+Release build note: the Wear module constrains Fragment to 1.8.9 because Play services base otherwise resolves 1.1.0, which fails ActivityResult permission API lint checks. Keep release lint enabled. On this Mac, build phone and watch release tasks in separate low-memory invocations so Kotlin and lint do not exhaust the 512MB Metaspace limit.
+
+The demo preflight caught a stale pending count after phone acknowledgement: disk deletion did not change recorder state, so the original state-only UI effect never refreshed. `PendingRecordingsUiTest` reproduces the file-deletion boundary. While STARTED, the watch screen now refreshes pending files and phone reachability every two seconds; polling stops when the screen/activity is not visible.
+
+Demo preflight also reproduced a zero-byte receive: startup pull and the Data Layer listener could copy the same item to the same incoming path at once. Intake is now serialized and `IncomingAudioTest` verifies empty-asset rejection, preservation of a good file on failed retry and partial-file cleanup. Acknowledge only after a nonempty atomic copy.

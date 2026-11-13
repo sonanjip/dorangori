@@ -47,11 +47,17 @@ dependencies {
     implementation(libs.wear.ongoing)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.play.services.wearable)
+    constraints {
+        // Play services base brings Fragment 1.1.0; ActivityResult permission handling needs 1.3+.
+        implementation("androidx.fragment:fragment:1.8.9")
+    }
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

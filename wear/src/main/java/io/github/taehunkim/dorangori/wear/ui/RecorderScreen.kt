@@ -18,6 +18,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.MaterialTheme
@@ -43,10 +48,19 @@ fun RecorderScreen(onToggle: () -> Unit) {
     val recording = state is RecState.Recording
     var pending by remember { mutableIntStateOf(0) }
     var autoStart by remember { mutableStateOf(WatchSettings.autoStart(context)) }
-    // Recount after each state change: a recording that just finished is waiting to be sent.
-    LaunchedEffect(state) { pending = RecordingFiles.pending(RecordingFiles.dir(context)).size }
     var phoneUp by remember { mutableStateOf<Boolean?>(null) }
-    LaunchedEffect(state) { phoneUp = Transfer.phoneReachable(context) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    // Acknowledgements and reconnections can happen while the recorder stays idle.
+    // Refresh only while visible; no background polling while the watch face is showing.
+    LaunchedEffect(lifecycleOwner, state) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                pending = withContext(Dispatchers.IO) { RecordingFiles.pending(RecordingFiles.dir(context)).size }
+                phoneUp = Transfer.phoneReachable(context)
+                delay(2_000)
+            }
+        }
+    }
     val elapsed by produceState(0L, state) {
         val s = state
         if (s is RecState.Recording) {
