@@ -17,7 +17,7 @@ Room `@Entity` 변경 시 `AppDatabase.VERSION` 증가 + `Migrations.kt`(`ALL_MI
 
 ## 테스트 메모
 - 단위: `./gradlew testDebugUnitTest`(파일명·보관 기간·시각 계산·자막 JSON·문자열 키). 계측: `MigrationTest`(`installDebugAndroidTest` 후 `adb shell am instrument -w`).
-- 페어링 없이 폰 쪽 시험: 디버그 빌드의 `DebugIngestReceiver`(`docs/development.md`). 에뮬레이터 마이크는 무음이고, 에뮬레이터 페어링은 Google 로그인이 필요하다.
+- 페어링 없이 폰 쪽 시험: 디버그 빌드의 `DebugIngestReceiver`(`docs/development.md`). 에뮬레이터 마이크는 무음이고, 현재 Wear OS 6 이미지는 Pixel Watch 컴패니언 앱이 필요하다(Play 스토어 설치에는 Google 로그인 필요). 에뮬레이터 페어링·연결 중/끊김 후 재연결 전송은 검증됨(`docs/emulator-pairing-test.md`).
 
 ## 구조 (요약, 계획은 `docs/architecture.md`)
 - 워치: 녹음(포그라운드 서비스, AAC m4a 16 kHz mono) → Data Layer `DataClient` + Asset으로 폰에 전송 → 폰이 DataItem을 지우면 워치 파일 삭제.
