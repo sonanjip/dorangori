@@ -13,7 +13,10 @@ import io.github.taehunkim.dorangori.wear.recording.RecState
 import io.github.taehunkim.dorangori.wear.recording.RecordingService
 import io.github.taehunkim.dorangori.wear.recording.RecordingState
 import io.github.taehunkim.dorangori.wear.recording.WatchSettings
+import androidx.lifecycle.lifecycleScope
+import io.github.taehunkim.dorangori.wear.transfer.Transfer
 import io.github.taehunkim.dorangori.wear.ui.RecorderScreen
+import kotlinx.coroutines.launch
 
 /**
  * Hardware buttons are never intercepted. The user assigns a button to "open Dorangori" in the watch settings; opening the app
@@ -39,6 +42,12 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         onLaunched(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Anything still on the watch (phone was away, queue lost) is offered again; items that exist are skipped.
+        lifecycleScope.launch { Transfer.syncPending(applicationContext) }
     }
 
     private fun onLaunched(intent: Intent?) {

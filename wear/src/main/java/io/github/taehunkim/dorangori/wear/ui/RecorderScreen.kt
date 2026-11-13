@@ -28,6 +28,7 @@ import io.github.taehunkim.dorangori.wear.recording.RecState
 import io.github.taehunkim.dorangori.wear.recording.RecordingFiles
 import io.github.taehunkim.dorangori.wear.recording.RecordingState
 import io.github.taehunkim.dorangori.wear.recording.WatchSettings
+import io.github.taehunkim.dorangori.wear.transfer.Transfer
 import kotlinx.coroutines.delay
 
 fun formatElapsed(ms: Long): String {
@@ -44,6 +45,8 @@ fun RecorderScreen(onToggle: () -> Unit) {
     var autoStart by remember { mutableStateOf(WatchSettings.autoStart(context)) }
     // Recount after each state change: a recording that just finished is waiting to be sent.
     LaunchedEffect(state) { pending = RecordingFiles.pending(RecordingFiles.dir(context)).size }
+    var phoneUp by remember { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(state) { phoneUp = Transfer.phoneReachable(context) }
     val elapsed by produceState(0L, state) {
         val s = state
         if (s is RecState.Recording) {
@@ -63,6 +66,12 @@ fun RecorderScreen(onToggle: () -> Unit) {
             }
             if (pending > 0) item {
                 Text(stringResource(R.string.pending_count, pending), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+            }
+            item {
+                Text(
+                    stringResource(when (phoneUp) { true -> R.string.phone_connected; false -> R.string.phone_not_found; null -> R.string.phone_checking }),
+                    style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center,
+                )
             }
             item {
                 SwitchButton(

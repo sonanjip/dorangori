@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Lets the watch app find out that this app is installed on the paired phone (see the watch's DataPaths.CAPABILITY_PHONE). -->
+    <string-array name="android_wear_capabilities">
+        <item>dorangori_phone</item>
+    </string-array>
+</resources>

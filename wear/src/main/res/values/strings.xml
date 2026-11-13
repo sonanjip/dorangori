@@ -6,4 +6,7 @@
     <string name="auto_start">Record when opened</string>
     <string name="notif_channel_recording">Recording</string>
     <string name="notif_recording_title">Recording voice</string>
+    <string name="phone_connected">Phone connected</string>
+    <string name="phone_not_found">Phone app not found</string>
+    <string name="phone_checking">Checking phone…</string>
 </resources>

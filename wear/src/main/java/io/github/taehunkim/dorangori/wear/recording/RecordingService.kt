@@ -11,6 +11,11 @@ import android.os.SystemClock
 import androidx.core.content.ContextCompat
 import androidx.core.app.ServiceCompat
 import java.io.File
+import io.github.taehunkim.dorangori.wear.transfer.Transfer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.time.Instant
 
 /**
@@ -19,6 +24,8 @@ import java.time.Instant
  */
 class RecordingService : Service() {
     private var recorder: Recorder? = null
+    // Outlives the service: the hand-over to the Data Layer may finish after stopSelf().
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -68,6 +75,7 @@ class RecordingService : Service() {
         if (ok && long && part.renameTo(current.file)) {
             RecordingState.set(RecState.Idle)
             RecordingState.emitSaved(current.file)
+            scope.launch { Transfer.syncPending(applicationContext) }
         } else {
             part.delete()
             RecordingState.set(RecState.Idle)

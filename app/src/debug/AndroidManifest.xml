@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Debug builds only: feeds a recording in as if the watch had sent it (no pairing needed for tests). -->
+        <receiver android:name="io.github.taehunkim.dorangori.debug.DebugIngestReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.taehunkim.dorangori.debug.INGEST" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

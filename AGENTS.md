@@ -15,6 +15,10 @@ Room `@Entity` 변경 시 `AppDatabase.VERSION` 증가 + `Migrations.kt`(`ALL_MI
 - `./gradlew assembleDebug testDebugUnitTest`. 여러 레포의 Gradle은 한 번에 하나씩 돌린다(메모리).
 - 서명: Nunsori 공용 release 키를 `DORANGORI_STORE_FILE/PASSWORD`, `DORANGORI_KEY_ALIAS/PASSWORD` 속성으로 준다. 같은 키라야 OndolSaem·조각보가 승인 없이 받아 준다.
 
+## 테스트 메모
+- 단위: `./gradlew testDebugUnitTest`(파일명·보관 기간·시각 계산·자막 JSON·문자열 키). 계측: `MigrationTest`(`installDebugAndroidTest` 후 `adb shell am instrument -w`).
+- 페어링 없이 폰 쪽 시험: 디버그 빌드의 `DebugIngestReceiver`(`docs/development.md`). 에뮬레이터 마이크는 무음이고, 에뮬레이터 페어링은 Google 로그인이 필요하다.
+
 ## 구조 (요약, 계획은 `docs/architecture.md`)
 - 워치: 녹음(포그라운드 서비스, AAC m4a 16 kHz mono) → Data Layer `DataClient` + Asset으로 폰에 전송 → 폰이 DataItem을 지우면 워치 파일 삭제.
 - 폰: 수신 → Room → ASR(OndolSaem) → 알림 + 목록 화면. 변환 시점(바로 / 예약 / 유휴 / 수동)과 자동 삭제는 설정.

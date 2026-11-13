@@ -6,4 +6,7 @@
     <string name="auto_start">열면 바로 녹음</string>
     <string name="notif_channel_recording">녹음</string>
     <string name="notif_recording_title">음성 녹음 중</string>
+    <string name="phone_connected">폰 연결됨</string>
+    <string name="phone_not_found">폰 앱을 찾을 수 없음</string>
+    <string name="phone_checking">폰 확인 중…</string>
 </resources>

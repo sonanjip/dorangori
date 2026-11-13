@@ -1,17 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+    <!-- Malbotdari and Jogakbo are reached through intents and bound services: Android 11+ needs to be told about them. -->
+    <queries>
+        <package android:name="io.github.taehunkim.malbotdari" />
+        <package android:name="io.github.taehunkim.jogakbo" />
+        <package android:name="io.github.taehunkim.ondolsaem" />
+    </queries>
 
     <application
+        android:name=".DorangoriApp"
         android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
-        <activity android:name=".MainActivity" android:exported="true">
+        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Recordings sent by the watch (Wearable Data Layer), also while the app is not running -->
+        <service android:name=".watch.WearReceiverService" android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/rec/" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name=".notify.ActionReceiver" android:exported="false" />
+
+        <!-- WorkManager foreground work (transcribing) -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
     </application>
 </manifest>

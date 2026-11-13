@@ -62,10 +62,13 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     // Speech recognition runs in OndolSaem, reached through its SDK.
     implementation(libs.ondolsaem.sdk)
+    // Saves a recording and its transcript as one note (API 2).
+    implementation(libs.jogakbo.sdk)
     implementation(libs.kotlinx.coroutines.android)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation("org.json:json:20260814") // real org.json for JVM unit tests (android.jar has stubs)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.test.ext.junit)
