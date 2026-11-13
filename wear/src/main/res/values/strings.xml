@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Dorangori</string>
-    <string name="placeholder">Dorangori</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="pending_count">%1$d waiting to send</string>
+    <string name="auto_start">Record when opened</string>
+    <string name="notif_channel_recording">Recording</string>
+    <string name="notif_recording_title">Recording voice</string>
 </resources>

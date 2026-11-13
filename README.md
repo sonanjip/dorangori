@@ -4,11 +4,11 @@
 
 Record a voice note on your Wear OS watch; your phone transcribes it with [OndolSaem](https://github.com/sonanjip/ondolsaem) on-device speech recognition and hands you the text: copy it, ask Malbotdari, or save it to Jogakbo together with the audio.
 
-Status: scaffold (0.1.0). The watch recorder, transfer, transcription and screens are being built; see [docs/roadmap.md](docs/roadmap.md).
+Status: early (0.1.0). The watch recorder works; transfer, transcription and the phone screens are being built; see [docs/roadmap.md](docs/roadmap.md).
 
 | Feature | Status |
 |---|---|
-| Record on the watch (screen button or an assigned hardware button) | planned |
+| Record on the watch (screen button or an assigned hardware button) | done (watch only) |
 | Send to the phone over Bluetooth, retry when reconnected | planned |
 | On-device transcription (now or later) | planned |
 | Notification actions: copy, ask Malbotdari, save to Jogakbo | planned |

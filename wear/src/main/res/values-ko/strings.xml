@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">도란고리</string>
-    <string name="placeholder">도란고리</string>
+    <string name="record">녹음</string>
+    <string name="stop">정지</string>
+    <string name="pending_count">전송 대기 %1$d개</string>
+    <string name="auto_start">열면 바로 녹음</string>
+    <string name="notif_channel_recording">녹음</string>
+    <string name="notif_recording_title">음성 녹음 중</string>
 </resources>
